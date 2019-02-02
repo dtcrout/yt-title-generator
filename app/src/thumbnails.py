@@ -21,9 +21,9 @@ if __name__ == "__main__":
         img_path = THUMBNAILS_DIR + video_id + '.jpg'
 
         if not os.path.exists(img_path):
+            print('Downloading', video_id, '...')
             r = requests.get(thumbnail_link, stream=True)
 
             if r.status_code == 200:
-                print('Downloading', video_id, '...')
                 with open(img_path, 'wb') as f:
                     shutil.copyfileobj(r.raw, f)
