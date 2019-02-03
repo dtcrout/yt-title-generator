@@ -58,4 +58,4 @@ def generate_features(path, shape=(224, 224, 3), verbose=False):
 if __name__ == "__main__":
     features = generate_features(THUMBNAILS_DIR, verbose=True)
 
-    pickle.dump(features, open(RESOURCES, 'wb'))
+    pickle.dump(features, open(RESOURCES + 'features.pkl', 'wb'))

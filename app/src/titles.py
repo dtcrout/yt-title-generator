@@ -8,6 +8,7 @@ METADATA = '../resources/USvideos.csv'
 THUMBNAILS_DIR = '../resources/thumbnails/'
 TITLES = '../resources/titles.txt'
 
+
 def preprocess_text(text):
     """
     Preprocess text.
@@ -16,7 +17,8 @@ def preprocess_text(text):
     - Remove non-alphanumeric characters
     """
     tokens = re.split('\W+', text.lower())
-    return ' '.join(tokens)
+    clean_tokens = [t for t in tokens if t not in ['a']]
+    return ' '.join(clean_tokens)
 
 
 if __name__ == "__main__":
