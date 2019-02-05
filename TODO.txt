@@ -1,0 +1,4 @@
+TODO
+
+* Is there a way to configure env variables for Python so I don't need to keep on defining
+  paths

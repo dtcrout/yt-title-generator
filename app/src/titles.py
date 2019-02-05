@@ -23,7 +23,7 @@ def preprocess_text(text):
 
 if __name__ == "__main__":
     # Import CSV and grab video ids and titles
-    yt_df = pd.read_csv(METADATA)
+    yt_df = pd.read_csv(METADATA, error_bad_lines=False)
     yt_df = yt_df[['video_id', 'title']]
 
     video_ids = list(yt_df.video_id.values)

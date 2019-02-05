@@ -3,6 +3,7 @@
 from keras.applications.vgg16 import VGG16
 from keras.applications.vgg16 import preprocess_input
 from keras.layers import Input
+from keras.models import Model
 from keras.preprocessing.image import img_to_array
 from keras.preprocessing.image import load_img
 import os
@@ -28,8 +29,9 @@ def generate_features(path, shape=(224, 224, 3), verbose=False):
         CNN features for model.
     """
     # Load model
-    in_layer = Input(shape=shape)
-    model = VGG16(include_top=False, input_tensor=in_layer)
+    model = VGG16()
+    model.layers.pop()
+    model = Model(inputs=model.inputs, outputs=model.layers[-1].output)
 
     if verbose:
         print(model.summary())
@@ -53,6 +55,8 @@ def generate_features(path, shape=(224, 224, 3), verbose=False):
         features[video_id] = feature
 
         print(video_id, 'completed...')
+
+    return features
 
 
 if __name__ == "__main__":

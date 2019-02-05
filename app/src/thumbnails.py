@@ -10,7 +10,8 @@ THUMBNAILS_DIR = '../resources/thumbnails/'
 
 if __name__ == "__main__":
     # Import CSV and grab video ids and thumbnail links
-    yt_df = pd.read_csv(METADATA)
+    # Error bad lines fixes the issue for bad records in table
+    yt_df = pd.read_csv(METADATA, error_bad_lines=False)
     yt_df = yt_df[['video_id', 'thumbnail_link']]
 
     video_ids = list(yt_df.video_id.values)
