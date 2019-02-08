@@ -14,8 +14,8 @@ from keras.models import Model
 def caption_model(vocab_size, max_length):
     # Feature extractor
     inputs1 = Input(shape=(4096,))
-    fe1 = Dropout(0.5)(inputs1)
-    fe2 = Dense(256, activation='relu')(fe1)
+    # fe1 = Dropout(0.5)(inputs1)
+    fe2 = Dense(256, activation='relu')(inputs1)
 
     # Sequence model
     inputs2 = Input(shape=(max_length,))

@@ -3,12 +3,12 @@
 from main import *
 from keras.models import load_model
 from numpy import argmax
+from numpy import random
 
 
 FEATURES = '../resources/features.pkl'
 TITLES = '../resources/titles.txt'
 MODEL = './model.h5'
-
 
 def word_for_id(integer, tokenizer):
     for word, index in tokenizer.word_index.items():
@@ -19,6 +19,8 @@ def word_for_id(integer, tokenizer):
 def generate_title(model, tokenizer, photo, max_length):
     in_text = 'startseq'
 
+    vocab = len(tokenizer.word_index) + 1
+
     for i in range(max_length):
         sequence = tokenizer.texts_to_sequences([in_text])[0]
 
@@ -26,7 +28,9 @@ def generate_title(model, tokenizer, photo, max_length):
 
         yhat = model.predict([photo, sequence], verbose=0)
 
-        yhat = argmax(yhat)
+        yhat = random.choice(list(range(vocab)), 1, p=yhat[0])
+
+        # yhat = argmax(yhat)
 
         word = word_for_id(yhat, tokenizer)
 
@@ -50,7 +54,7 @@ if __name__ == "__main__":
 
     with open('generated.txt', 'w') as f:
         for k, v in features.items():
-            title = generate_title(model, tokenizer, v, max_length=15)
+            title = generate_title(model, tokenizer, v, max_length=21)
 
             line = k + '\t' + title
 

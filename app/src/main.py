@@ -80,7 +80,7 @@ def create_sequences(tokenizer, max_length, titles, images):
     Y = []
 
     for key, title in titles.items():
-        title = clean_titles(title)
+        # title = clean_titles(title)
         seq = tokenizer.texts_to_sequences([title])[0]
 
         for i in range(1, len(seq)):
@@ -102,7 +102,7 @@ if __name__ == "__main__":
     titles = load_titles(TITLES)
     dataset = list(titles.keys())
 
-    train_dataset, test_dataset = train_test_split(dataset, train_size=0.1, test_size=0.9)
+    train_dataset, test_dataset = train_test_split(dataset, train_size=0.7, test_size=0.3)
 
     # Make image feature sets
     train_features = load_image_features(FEATURES, train_dataset)  # dict()
@@ -127,7 +127,7 @@ if __name__ == "__main__":
     filepath = 'model.h5'
     checkpoint = ModelCheckpoint(filepath, monitor='val_loss', verbose=1, save_best_only=True, mode='min')
 
-    model.fit([X1_train, X2_train], Ytrain, epochs=20, verbose=2, callbacks=[checkpoint],
+    model.fit([X1_train, X2_train], Ytrain, epochs=10, verbose=2, callbacks=[checkpoint],
               validation_data=([X1_test, X2_test], Ytest))
 
     pickle.dump(tokenizer, open('tokenizer.pkl', 'wb'))
