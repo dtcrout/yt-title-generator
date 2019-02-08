@@ -1,8 +1,23 @@
 """Create HTML page to view results."""
 
+import re
+
 THUMBNAILS_DIR = '../resources/thumbnails/'
 TITLES = '../resources/titles.txt'
+GENERATED = './generated.txt'
 PATH = './results.html'
+
+stopwords = ['startseq', 'endseq']
+
+def load_titles(path):
+    titles = dict()
+    with open(path, 'r') as f:
+        for line in f:
+            tokens = line.strip('\n').split('\t')
+            video_id, title = tokens[0], tokens[1]
+            title = ' '.join([t for t in title.split() if t not in stopwords])
+            titles[video_id] = title
+    return titles
 
 
 def opening():
@@ -28,6 +43,8 @@ def new_entry(path, title, gen_title):
 
 
 if __name__ == "__main__":
+    generated = load_titles(GENERATED) 
+
     with open(PATH, 'w') as f:
         f.write(opening())
         with open(TITLES, 'r') as f2:
@@ -37,7 +54,10 @@ if __name__ == "__main__":
 
                 path = THUMBNAILS_DIR + video_id + '.jpg'
 
-                entry = new_entry(path, title, 'None')
+                try:
+                    entry = new_entry(path, title, generated[video_id])
+                except:
+                    entry = new_entry(path, title, None)
 
                 f.write(entry)
 

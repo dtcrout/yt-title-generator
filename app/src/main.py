@@ -7,18 +7,32 @@ from keras.utils import to_categorical
 from model import caption_model
 from numpy import array
 import pickle
+from sklearn.model_selection import train_test_split
+
+from nltk.corpus import stopwords
 
 TITLES = '../resources/titles.txt'
 FEATURES = '../resources/features.pkl'
+
+stopwords = stopwords.words('english')
+
+
+def clean_titles(title):
+    title = title.split()
+    title = [word.lower() for word in title]
+    title = [word for word in title if len(word)>1]
+    title = [word for word in title if word.isalpha()]
+    title = [word for word in title if word not in stopwords]
+    title = ' '.join(title)
+    return title
 
 def load_titles(path):
     titles = dict()
     with open(path, 'r') as f:
         for line in f:
             tokens = line.strip('\n').split('\t')
-            video_id, title = tokens[0], tokens[1:][0]
-            title = 'startseq ' + ' '.join(title) + ' endseq'
-            print(title)
+            video_id, title = tokens[0], tokens[1]
+            title = 'startseq ' + title + ' endseq'
             titles[video_id] = title
 
     return titles
@@ -38,9 +52,11 @@ def to_lines(titles):
 
 
 def create_tokenizer(titles):
-    lines = to_lines(titles)
+    all_titles = []
+    for k in titles.keys():
+        all_titles.append(titles[k])
     tokenizer = Tokenizer()
-    tokenizer.fit_on_texts(titles)
+    tokenizer.fit_on_texts(all_titles)
     return tokenizer
 
 
@@ -51,6 +67,12 @@ def max_length(titles):
             lengths.append(len(t))
     return max(lengths)
 
+def make_title_set(titles, dataset):
+    title_set = dict()
+    for video_id in dataset:
+        title_set[video_id] = titles[video_id]
+    return title_set
+
 
 def create_sequences(tokenizer, max_length, titles, images):
     X_img = []
@@ -58,6 +80,7 @@ def create_sequences(tokenizer, max_length, titles, images):
     Y = []
 
     for key, title in titles.items():
+        title = clean_titles(title)
         seq = tokenizer.texts_to_sequences([title])[0]
 
         for i in range(1, len(seq)):
@@ -76,19 +99,18 @@ def create_sequences(tokenizer, max_length, titles, images):
 
 if __name__ == "__main__":
     # Load titles
-    titles = load_titles(TITLES)  # dict()
+    titles = load_titles(TITLES)
+    dataset = list(titles.keys())
 
-    # Take first 200 samples to make training set
-    train_dataset = list(titles.keys())[:200]  # list()
-    test_dataset = list(titles.keys())[200:400]  # list()
+    train_dataset, test_dataset = train_test_split(dataset, train_size=0.1, test_size=0.9)
 
     # Make image feature sets
     train_features = load_image_features(FEATURES, train_dataset)  # dict()
     test_features = load_image_features(FEATURES, test_dataset)  # dict()
 
     # Make title sets
-    train_titles = {k: titles[k] for k in train_dataset}  # dict()
-    test_titles = {k: titles[k] for k in test_dataset}  # dict()
+    train_titles = make_title_set(titles, train_dataset)  # dict()
+    test_titles = make_title_set(titles, test_dataset)  # dict()
 
     # Prepare tokenizer
     tokenizer = create_tokenizer(train_titles)

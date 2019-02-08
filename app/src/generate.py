@@ -50,10 +50,10 @@ if __name__ == "__main__":
 
     with open('generated.txt', 'w') as f:
         for k, v in features.items():
-            title = generate_title(model, tokenizer, v, max_length=8)
+            title = generate_title(model, tokenizer, v, max_length=15)
 
             line = k + '\t' + title
 
             print(line)
 
-            f.write(line)
+            f.write(line + '\n')
