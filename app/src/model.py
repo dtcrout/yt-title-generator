@@ -5,13 +5,11 @@ from keras.layers import Dropout
 from keras.layers import Embedding
 from keras.layers import Input
 from keras.layers import LSTM
-from keras.layers import RepeatVector
-from keras.layers import TimeDistributed
 from keras.layers.merge import add
-from keras.layers.pooling import GlobalMaxPooling2D
 from keras.models import Model
 
 def caption_model(vocab_size, max_length):
+    """Captioning model."""
     # Feature extractor
     inputs1 = Input(shape=(4096,))
     # fe1 = Dropout(0.5)(inputs1)

@@ -1,8 +1,0 @@
-TODO
-
-* Make global paths for resources
-
-COMPLETED
-
-* Fix tokenization
-* Add train test method

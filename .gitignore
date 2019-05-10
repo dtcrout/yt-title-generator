@@ -1,2 +1,13 @@
+# Resources and other generated files
 app/resources/*
 app/src/results.html
+
+# Python
+__pycache__
+*/__pycache__
+*/*/__pycache__
+
+# Mac hidden files
+.DS_Store
+*/.DS_Store
+*/*/.DS_Store

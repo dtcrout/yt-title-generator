@@ -13,6 +13,8 @@ from nltk.corpus import stopwords
 
 TITLES = '../resources/titles.txt'
 FEATURES = '../resources/features.pkl'
+MODEL = '../resources/model.h5'
+TOKENIZER = '../resources/tokenizer.pkl'
 
 stopwords = stopwords.words('english')
 
@@ -119,15 +121,15 @@ if __name__ == "__main__":
     max_length = max_length(train_titles)
     print('Title length:', max_length)
 
+    pickle.dump(tokenizer, open(TOKENIZER, 'wb'))
+
     X1_train, X2_train, Ytrain = create_sequences(tokenizer, max_length, train_titles, train_features)
     X1_test, X2_test, Ytest = create_sequences(tokenizer, max_length, test_titles, test_features)
 
     model = caption_model(vocab_size, max_length)
 
-    filepath = 'model.h5'
+    filepath = MODEL
     checkpoint = ModelCheckpoint(filepath, monitor='val_loss', verbose=1, save_best_only=True, mode='min')
 
-    model.fit([X1_train, X2_train], Ytrain, epochs=10, verbose=2, callbacks=[checkpoint],
+    model.fit([X1_train, X2_train], Ytrain, epochs=50, verbose=2, callbacks=[checkpoint],
               validation_data=([X1_test, X2_test], Ytest))
-
-    pickle.dump(tokenizer, open('tokenizer.pkl', 'wb'))
