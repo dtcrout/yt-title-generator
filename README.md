@@ -1,6 +1,7 @@
 # YouTube Title Generator
 
-Generate titles for YouTube thumbnails using image captioning.
+Generate titles for YouTube thumbnails using an image captioning LSTM
+([Long-Short Term Memory](https://en.wikipedia.org/wiki/Long_short-term_memory)) model.
 
 Do you watch a lot of YouTube like me and realized how thumbnails typically
 follow a particular style? Do you notice just how non-sensical
@@ -9,7 +10,7 @@ it would be funny to generate my own. Using this code, you can generate some qua
 
 ![hot_takes](examples/hot_takes.png)
 
-Ahh yes, the senate challenge with somebody from the litfam...
+Ahh yes, the `senate challenge with somebody from the litfam`...
 
 ### Description
 
