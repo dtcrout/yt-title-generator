@@ -1,2 +1,7 @@
 black==19.3b0
+Keras==2.2.4
+nltk==3.4.1
+numpy==1.16.3
 pandas==0.24.0
+scikit-learn==0.20.3
+tensorflow==1.13.1

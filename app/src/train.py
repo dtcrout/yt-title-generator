@@ -1,4 +1,10 @@
-"""Training a caption model."""
+"""Train a caption model.
+
+This script trains the captioning model.
+
+Code is adapted from:
+https://machinelearningmastery.com/develop-a-deep-learning-caption-generation-model-in-python/
+"""
 
 from keras.callbacks import ModelCheckpoint
 from keras.preprocessing.text import Tokenizer
@@ -11,37 +17,38 @@ from sklearn.model_selection import train_test_split
 
 from nltk.corpus import stopwords
 
-TITLES = '../resources/titles.txt'
-FEATURES = '../resources/features.pkl'
-MODEL = '../resources/model.h5'
-TOKENIZER = '../resources/tokenizer.pkl'
+TITLES = "../resources/titles.txt"
+FEATURES = "../resources/features.pkl"
+MODEL = "../resources/model.h5"
+TOKENIZER = "../resources/tokenizer.pkl"
 
-stopwords = stopwords.words('english')
+stopwords = stopwords.words("english")
 
 
 def clean_titles(title):
     title = title.split()
     title = [word.lower() for word in title]
-    title = [word for word in title if len(word)>1]
+    title = [word for word in title if len(word) > 1]
     title = [word for word in title if word.isalpha()]
     title = [word for word in title if word not in stopwords]
-    title = ' '.join(title)
+    title = " ".join(title)
     return title
+
 
 def load_titles(path):
     titles = dict()
-    with open(path, 'r') as f:
+    with open(path, "r") as f:
         for line in f:
-            tokens = line.strip('\n').split('\t')
+            tokens = line.strip("\n").split("\t")
             video_id, title = tokens[0], tokens[1]
-            title = 'startseq ' + title + ' endseq'
+            title = "startseq " + title + " endseq"
             titles[video_id] = title
 
     return titles
 
 
 def load_image_features(path, dataset):
-    features = pickle.load(open(path, 'rb'))
+    features = pickle.load(open(path, "rb"))
     return {k: features[k] for k in dataset}
 
 
@@ -68,6 +75,7 @@ def max_length(titles):
         for t in titles[key].split():
             lengths.append(len(t))
     return max(lengths)
+
 
 def make_title_set(titles, dataset):
     title_set = dict()
@@ -104,7 +112,9 @@ if __name__ == "__main__":
     titles = load_titles(TITLES)
     dataset = list(titles.keys())
 
-    train_dataset, test_dataset = train_test_split(dataset, train_size=0.7, test_size=0.3)
+    train_dataset, test_dataset = train_test_split(
+        dataset, train_size=0.7, test_size=0.3
+    )
 
     # Make image feature sets
     train_features = load_image_features(FEATURES, train_dataset)  # dict()
@@ -117,19 +127,31 @@ if __name__ == "__main__":
     # Prepare tokenizer
     tokenizer = create_tokenizer(train_titles)
     vocab_size = len(tokenizer.word_index) + 1
-    print('Vocab size: ', vocab_size)
+    print("Vocab size: ", vocab_size)
     max_length = max_length(train_titles)
-    print('Title length:', max_length)
+    print("Title length:", max_length)
 
-    pickle.dump(tokenizer, open(TOKENIZER, 'wb'))
+    pickle.dump(tokenizer, open(TOKENIZER, "wb"))
 
-    X1_train, X2_train, Ytrain = create_sequences(tokenizer, max_length, train_titles, train_features)
-    X1_test, X2_test, Ytest = create_sequences(tokenizer, max_length, test_titles, test_features)
+    X1_train, X2_train, Ytrain = create_sequences(
+        tokenizer, max_length, train_titles, train_features
+    )
+    X1_test, X2_test, Ytest = create_sequences(
+        tokenizer, max_length, test_titles, test_features
+    )
 
     model = caption_model(vocab_size, max_length)
 
     filepath = MODEL
-    checkpoint = ModelCheckpoint(filepath, monitor='val_loss', verbose=1, save_best_only=True, mode='min')
+    checkpoint = ModelCheckpoint(
+        filepath, monitor="val_loss", verbose=1, save_best_only=True, mode="min"
+    )
 
-    model.fit([X1_train, X2_train], Ytrain, epochs=50, verbose=2, callbacks=[checkpoint],
-              validation_data=([X1_test, X2_test], Ytest))
+    model.fit(
+        [X1_train, X2_train],
+        Ytrain,
+        epochs=50,
+        verbose=2,
+        callbacks=[checkpoint],
+        validation_data=([X1_test, X2_test], Ytest),
+    )

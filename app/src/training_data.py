@@ -20,8 +20,8 @@ import pickle
 import re
 import requests
 import shutil
+import sys
 
-# metadata_files = ["../resources/USvideos.csv", "../resources/GBvideos.csv"]
 metadata_files = ["../resources/USvideos.csv"]
 thumbnails_dir = "../resources/thumbnails/"
 titles_path = "../resources/titles.txt"
@@ -181,14 +181,19 @@ def generate_image_features(thumbnails_dir, shape=(224, 224, 3), verbose=False):
 
 if __name__ == "__main__":
     print("Loading data...")
-    yt_data = load_data(metadata_files)
+    try:
+        yt_data = load_data(metadata_files)
+    except Exception:
+        print("Metadata not found!")
+        sys.exit()
 
-    print("Downloading thumbnails...")
-    get_thumbnails(yt_data, thumbnails_dir)
-
-    print("Creating titles...")
-    get_titles(yt_data, thumbnails_dir, titles_path)
-
-    print("Generating image features...")
-    image_features = generate_image_features(thumbnails_dir, verbose=True)
-    pickle.dump(image_features, open(features_path, "wb"))
+    if sys.argv[1] == "thumbnails":
+        print("Downloading thumbnails...")
+        get_thumbnails(yt_data, thumbnails_dir)
+    elif sys.argv[1] == "titles":
+        print("Creating titles...")
+        get_titles(yt_data, thumbnails_dir, titles_path)
+    elif sys.argv[1] == "features":
+        print("Generating image features...")
+        image_features = generate_image_features(thumbnails_dir, verbose=True)
+        pickle.dump(image_features, open(features_path, "wb"))
